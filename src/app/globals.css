@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+
+html, body { background: #EEF0EC; color: #1D2733; }
+body {
+  -webkit-tap-highlight-color: transparent;
+  padding-bottom: env(safe-area-inset-bottom);
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible { outline: 3px solid #3A6EA5; outline-offset: 2px; }
+
+@layer components {
+  /* Titres en Archivo élargi : la typo porte l'identité "chantier". */
+  .display { font-stretch: 125%; font-weight: 800; letter-spacing: -0.015em; line-height: 1.02; }
+
+  /* Ruban mètre : graduations fines tous les 10 px, repères tous les 50 px. */
+  .tape {
+    background-color: #F5C400;
+    background-image:
+      repeating-linear-gradient(90deg, #1D2733 0 1.5px, transparent 1.5px 10px),
+      repeating-linear-gradient(90deg, #1D2733 0 2px, transparent 2px 50px);
+    background-size: 100% 9px, 100% 18px;
+    background-repeat: no-repeat;
+  }
+
+  .btn {
+    @apply inline-flex w-full items-center justify-center gap-2 rounded-[14px] px-5 text-base font-bold transition-[transform,background-color] active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100;
+    min-height: 3.5rem;
+  }
+  .btn-primary { @apply btn bg-hiviz text-ink hover:bg-[#E8B900]; }
+  .btn-dark { @apply btn bg-ink text-white hover:bg-[#2A3747]; }
+  .btn-ghost { @apply btn border-2 border-line bg-transparent text-ink hover:border-ink; }
+  .btn-small { @apply inline-flex items-center justify-center rounded-[10px] px-4 py-2 text-sm font-bold; }
+
+  .field {
+    @apply block w-full rounded-[12px] border-2 border-line bg-white px-4 py-3 text-base text-ink placeholder:text-mute/70 focus:border-ink focus:outline-none;
+  }
+  .label { @apply mb-2 block text-sm font-semibold text-ink; }
+  .sheet { @apply rounded-[20px] border border-line bg-white p-5; }
+  .chip { @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold; }
+  .error { @apply mt-3 rounded-[10px] bg-alert/10 px-3 py-2 text-sm font-medium text-alert; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
