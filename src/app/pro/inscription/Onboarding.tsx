@@ -86,7 +86,7 @@ export default function Onboarding({ userId, kycStatus, radiusKm, categories, re
           {kycStatus !== 'verified' && (
             <label className="mt-4 flex items-start gap-3 text-sm">
               <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-ink" checked={accepted} onChange={(e) => { setAccepted(e.target.checked); setError('') }} />
-              <span>J’accepte les <Link href="/conditions" target="_blank" className="font-semibold underline">conditions générales</Link>, notamment l’article 9 sur les intervenants.</span>
+              <span>J’accepte les <Link href="/terms" target="_blank" className="font-semibold underline">conditions générales</Link>, notamment l’article 9 sur les intervenants.</span>
             </label>
           )}
           {kycStatus !== 'verified' && (
@@ -143,7 +143,7 @@ export default function Onboarding({ userId, kycStatus, radiusKm, categories, re
         </li>
       </ol>
 
-      <button className="btn-primary mt-6" onClick={() => router.push('/pro')}>Aller au tableau de bord</button>
+      <button className="btn-primary mt-6" onClick={() => router.push('/handyman/dashboard')}>Aller au tableau de bord</button>
     </div>
   )
 }

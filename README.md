@@ -7,7 +7,7 @@ Next.js 15 · Tailwind · Supabase (Postgres, Auth, Realtime, Storage) · Stripe
 
 1. **Supabase** : créez un projet, puis appliquez les migrations :
    `npx supabase link --project-ref <ref> && npx supabase db push`
-   (ou collez les huit fichiers de `supabase/migrations` dans le SQL Editor, dans l’ordre).
+   (ou collez les neuf fichiers de `supabase/migrations` dans le SQL Editor, dans l’ordre).
 2. **Auth Supabase** : Authentication > URL Configuration, ajoutez `https://votre-domaine/auth/callback` aux Redirect URLs.
 3. **Stripe** : activez Connect (comptes Express, pays FR). Créez deux webhooks vers `https://votre-domaine/api/stripe/webhook` :
    - « Votre compte » : `payment_intent.amount_capturable_updated`, `payment_intent.canceled`, `payment_intent.payment_failed` → `STRIPE_WEBHOOK_SECRET`
@@ -17,6 +17,21 @@ Next.js 15 · Tailwind · Supabase (Postgres, Auth, Realtime, Storage) · Stripe
 6. `npm install && npm run dev`, ou déployez sur Vercel (le cron toutes les 5 min est déclaré dans `vercel.json` ; le plan Hobby limite les crons à un par jour).
 7. **Premier admin** : connectez-vous, puis dans le SQL Editor :
    `update public.users set role = 'admin' where id = (select id from auth.users where email = 'vous@exemple.fr');`
+
+## Adresses
+
+| Page | Accès |
+|---|---|
+| `/` landing | public |
+| `/client/dashboard` espace particulier | public (présentation) ; un client connecté y voit ses demandes |
+| `/handyman/dashboard` espace intervenant | public (présentation) ; un intervenant connecté y voit son tableau de bord |
+| `/reserver` réservation | public ; connexion demandée seulement au paiement, la demande est conservée |
+| `/auth/login`, `/auth/signup` | public (lien de connexion par e-mail) |
+| `/pricing`, `/terms`, `/privacy`, `/legal` | public |
+| `/missions/…`, `/chat/…`, `/pro/…`, `/admin` | connexion requise (`src/proxy.ts`) |
+
+Les anciennes adresses (`/connexion`, `/conditions`, `/confidentialite`, `/mentions-legales`) redirigent vers les nouvelles.
+Sans clés Supabase (tests d'interface), toutes les pages publiques fonctionnent ; les pages privées renvoient vers la connexion.
 
 ## Parcours
 

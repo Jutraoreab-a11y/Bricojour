@@ -39,7 +39,7 @@ export async function dispatchMission(missionId: string) {
     {
       title: `${category} : ${m?.title ?? 'nouvelle demande'}`,
       body: `Environ ${formatEuros(net)} pour vous. Premier qui accepte, premier servi.`,
-      url: '/pro',
+      url: '/handyman/dashboard',
     },
   )
   return inserted.length

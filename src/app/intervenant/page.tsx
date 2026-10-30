@@ -43,9 +43,9 @@ export default function Intervenant() {
         </ol>
       </section>
 
-      <Link href="/connexion?role=worker" className="btn-primary mt-10">Créer mon compte intervenant</Link>
+      <Link href="/auth/signup?role=worker" className="btn-primary mt-10">Créer mon compte intervenant</Link>
       <p className="mt-4 text-center text-sm">
-        Déjà inscrit ? <Link href="/connexion?role=worker&next=/pro" className="font-semibold text-plaster underline underline-offset-4">Se connecter</Link>
+        Déjà inscrit ? <Link href="/auth/login?role=worker&next=/handyman/dashboard" className="font-semibold text-plaster underline underline-offset-4">Se connecter</Link>
       </p>
       <p className="mt-8 text-center text-xs text-mute">
         Uniquement des petits travaux à bas risque : pas de gros œuvre, de gaz, de tableau électrique ni de travaux en hauteur.

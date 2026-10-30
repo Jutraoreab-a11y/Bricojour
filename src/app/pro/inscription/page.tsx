@@ -10,7 +10,7 @@ export const metadata = { title: 'Mon profil intervenant' }
 export default async function Inscription() {
   const { supabase, user } = await getSessionUser()
   let { data: me } = await supabase.from('users').select('*').eq('id', user!.id).single()
-  if (me?.role !== 'worker') redirect('/missions')
+  if (me?.role !== 'worker') redirect('/client/dashboard')
 
   // Au retour de Stripe, le webhook peut avoir du retard : on resynchronise.
   if (me.stripe_account_id && me.kyc_status !== 'verified' && process.env.STRIPE_SECRET_KEY) {

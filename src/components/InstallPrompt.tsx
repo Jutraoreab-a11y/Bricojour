@@ -27,7 +27,9 @@ export default function InstallPrompt() {
       (navigator as Navigator & { standalone?: boolean }).standalone === true
     let dismissed = false
     try { dismissed = localStorage.getItem(DISMISS_KEY) === '1' } catch {}
-    if (standalone || dismissed) return
+    // Proposition d'installation réservée aux téléphones et tablettes.
+    const touchDevice = window.matchMedia('(pointer: coarse)').matches
+    if (standalone || dismissed || !touchDevice) return
 
     setIsIos(/iphone|ipad|ipod/i.test(navigator.userAgent))
     const onPrompt = (e: Event) => {

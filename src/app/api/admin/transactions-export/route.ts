@@ -19,6 +19,7 @@ export async function GET() {
     'date', 'mission', 'client', 'intervenant', 'statut',
     'gross_amount', 'platform_fee_client', 'platform_fee_provider',
     'net_provider_payout', 'materials_reimbursement', 'marge_plateforme',
+    'marge_dont_connexion', 'marge_dont_facilitation_admin',
     'stripe_charge', 'stripe_transfer',
   ]
   const name = (x: unknown) => (x as { full_name?: string } | null)?.full_name ?? ''
@@ -26,6 +27,7 @@ export async function GET() {
     t.created_at, t.mission_id, name(t.client), name(t.provider), t.status,
     eur(t.gross_amount), eur(t.platform_fee_client), eur(t.platform_fee_provider),
     eur(t.net_provider_payout), eur(t.materials_reimbursement), eur(t.platform_margin),
+    eur(t.margin_connection_fee), eur(t.margin_admin_facilitation),
     t.stripe_charge_id, t.stripe_transfer_id,
   ].map(csv).join(';'))
 

@@ -30,3 +30,28 @@ export function clientPrice(rateCents: number, hours: number, minHours = 1) {
 
 /** Tarif horaire affiché au client, frais de service inclus. */
 export const clientHourly = (rateCents: number) => clientPrice(rateCents, 1).total
+
+/**
+ * Partage complet d'une transaction marketplace (centimes), identique au calcul en base :
+ *  - le client paie la main-d'œuvre + 20 % + le matériel au prix coûtant ;
+ *  - l'intervenant reçoit la main-d'œuvre − 20 % + 100 % du matériel ;
+ *  - la plateforme garde les deux 20 %, ventilés en interne moitié/moitié.
+ */
+export function marketplaceSplit(rateCents: number, hours: number, materialsCents = 0, minHours = 1) {
+  const labor = Math.round(rateCents * billedHours(hours, minHours))
+  const feeClient = Math.round(labor * CLIENT_FEE_RATE)
+  const feeProvider = Math.round(labor * PLATFORM_FEE_RATE)
+  const margin = feeClient + feeProvider
+  const marginAdminFacilitation = Math.floor(margin / 2)
+  return {
+    labor,
+    materials: materialsCents,
+    gross: labor + feeClient + materialsCents,
+    feeClient,
+    feeProvider,
+    payout: labor - feeProvider + materialsCents,
+    margin,
+    marginConnection: margin - marginAdminFacilitation,
+    marginAdminFacilitation,
+  }
+}

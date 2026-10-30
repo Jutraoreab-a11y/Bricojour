@@ -26,7 +26,7 @@ export default function PhotoPicker({ bucket, max, paths, onAdd, onRemove, addLa
     setError('')
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setError('Reconnectez-vous pour envoyer des photos.'); setBusy(false); return }
+    if (!user) { setError('Connectez-vous pour ajouter des photos (vous pouvez aussi continuer sans).'); setBusy(false); return }
 
     for (const file of files) {
       if (!file.type.startsWith('image/')) { setError('Seules les photos sont acceptées.'); continue }

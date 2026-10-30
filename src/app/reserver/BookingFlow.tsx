@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
@@ -13,9 +13,11 @@ import type { Category } from '@/lib/types'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '')
 type Slot = keyof typeof SLOT_LABEL
+const DRAFT_KEY = 'bricojour-booking-draft'
+type Draft = { categoryId: number; title: string; description: string; hours: number; slot: Slot; address: Address }
 const STEPS = ['Type de travaux', 'Le problème', 'Adresse', 'Paiement']
 
-export default function BookingFlow({ categories, initialSlug }: { categories: Category[]; initialSlug?: string }) {
+export default function BookingFlow({ categories, initialSlug, resume }: { categories: Category[]; initialSlug?: string; resume?: boolean }) {
   const initial = categories.find((c) => c.slug === initialSlug)
   const [step, setStep] = useState(initial ? 1 : 0)
   const [categoryId, setCategoryId] = useState<number | null>(initial?.id ?? null)
@@ -29,6 +31,21 @@ export default function BookingFlow({ categories, initialSlug }: { categories: C
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [accepted, setAccepted] = useState(false)
+  const [needsLogin, setNeedsLogin] = useState(false)
+
+  // Retour après connexion : on reprend la demande là où elle s'était arrêtée.
+  useEffect(() => {
+    if (!resume) return
+    try {
+      const raw = sessionStorage.getItem(DRAFT_KEY)
+      if (!raw) return
+      const d = JSON.parse(raw) as Draft
+      sessionStorage.removeItem(DRAFT_KEY)
+      if (!categories.some((c) => c.id === d.categoryId)) return
+      setCategoryId(d.categoryId); setTitle(d.title); setDescription(d.description)
+      setHours(d.hours); setSlot(d.slot); setAddress(d.address); setStep(3)
+    } catch { /* brouillon illisible ou stockage indisponible : on repart de zéro */ }
+  }, [resume, categories])
 
   const category = categories.find((c) => c.id === categoryId)
   const hourOptions = useMemo(() => {
@@ -51,6 +68,14 @@ export default function BookingFlow({ categories, initialSlug }: { categories: C
     })
     const data = await res.json().catch(() => ({}))
     setBusy(false)
+    if (res.status === 401) {
+      try {
+        const draft: Draft = { categoryId: category.id, title, description, hours, slot, address }
+        sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
+      } catch { /* stockage indisponible : la demande sera à ressaisir */ }
+      setNeedsLogin(true)
+      return
+    }
     if (!res.ok) { setError(data.message ?? 'La demande n’a pas pu être créée. Réessayez.'); return }
     setPayment(data)
   }
@@ -156,10 +181,20 @@ export default function BookingFlow({ categories, initialSlug }: { categories: C
               <label className="mt-5 flex items-start gap-3 text-sm">
                 <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-ink" checked={accepted} onChange={(e) => { setAccepted(e.target.checked); setError('') }} />
                 <span>
-                  J’accepte les <Link href="/conditions" target="_blank" className="font-semibold underline">conditions générales</Link> et je demande que l’intervention ait lieu aujourd’hui, avant la fin du délai de rétractation. Je perds ce droit une fois l’intervention entièrement réalisée.
+                  J’accepte les <Link href="/terms" target="_blank" className="font-semibold underline">conditions générales</Link> et je demande que l’intervention ait lieu aujourd’hui, avant la fin du délai de rétractation. Je perds ce droit une fois l’intervention entièrement réalisée.
                 </span>
               </label>
               {error && <p className="error">{error}</p>}
+              {needsLogin && (
+                <div className="mt-4 rounded-[14px] bg-ink p-4 text-white">
+                  <p className="font-semibold">Dernière étape : identifiez-vous</p>
+                  <p className="mt-1 text-sm text-white/80">Votre demande est gardée. Après connexion, vous revenez directement au paiement.</p>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <Link href={`/auth/signup?next=${encodeURIComponent('/reserver?reprise=1')}`} className="btn-small bg-hiviz text-ink">Créer un compte</Link>
+                    <Link href={`/auth/login?next=${encodeURIComponent('/reserver?reprise=1')}`} className="btn-small border-2 border-white/30">Se connecter</Link>
+                  </div>
+                </div>
+              )}
               <div className="mt-6 grid grid-cols-[auto_1fr] gap-2">
                 <button className="btn-ghost px-6" onClick={() => setStep(2)}>Retour</button>
                 <button className="btn-primary" disabled={busy} onClick={createMission}>{busy ? 'Préparation…' : 'Passer au paiement'}</button>

@@ -1,12 +1,6 @@
-import Page from '@/components/Page'
-import LegalDocView from '@/components/LegalDocView'
+import { permanentRedirect } from 'next/navigation'
 
-export const metadata = { title: 'Conditions générales' }
-
-export default function LegalPage() {
-  return (
-    <Page>
-      <LegalDocView doc="conditions" />
-    </Page>
-  )
+/** Ancienne adresse conservée pour les liens existants. */
+export default function OldLegalPage() {
+  permanentRedirect('/terms')
 }

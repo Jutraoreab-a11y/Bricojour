@@ -13,7 +13,7 @@ export const metadata = { title: 'Espace pro' }
 export default async function Pro() {
   const { supabase, user } = await getSessionUser()
   const { data: me } = await supabase.from('users').select('*').eq('id', user!.id).single()
-  if (me?.role !== 'worker') redirect('/missions')
+  if (me?.role !== 'worker') redirect('/client/dashboard')
 
   const ready = me.worker_status === 'active' && me.kyc_status === 'verified'
   const [{ data: offers }, { data: active }, { data: done }] = await Promise.all([

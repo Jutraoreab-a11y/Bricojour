@@ -1,15 +1,12 @@
 import Link from 'next/link'
 import Page from '@/components/Page'
-import { createClient } from '@/lib/supabase/server'
+import { getCategories } from '@/lib/catalog'
 import { formatEuros } from '@/lib/money'
-import type { Category } from '@/lib/types'
 
 export const metadata = { title: "Particulier" }
 
 export default async function Particulier() {
-  const supabase = await createClient()
-  const { data } = await supabase.from('categories').select('*').eq('is_active', true).order('sort_order')
-  const categories = (data ?? []) as Category[]
+  const categories = await getCategories()
   const today = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Paris' }).format(new Date())
 
   return (
@@ -69,7 +66,7 @@ export default async function Particulier() {
       </section>
 
       <p className="mt-12 text-center text-sm">
-        Vous êtes bricoleur ? <Link href="/intervenant" className="font-semibold text-plaster underline underline-offset-4">Proposer mes services</Link>
+        Vous êtes bricoleur ? <Link href="/handyman/dashboard" className="font-semibold text-plaster underline underline-offset-4">Proposer mes services</Link>
       </p>
 
       <p className="mt-8 text-center text-xs text-mute">

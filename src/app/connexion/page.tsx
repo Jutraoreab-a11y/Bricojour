@@ -1,13 +1,8 @@
-import Page from '@/components/Page'
-import LoginForm from './LoginForm'
+import { redirect } from 'next/navigation'
 
-export const metadata = { title: 'Connexion' }
-
+/** Ancienne adresse : redirige vers /auth/login en gardant les paramètres. */
 export default async function Connexion({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams
-  return (
-    <Page>
-      <LoginForm next={sp.next} initialRole={sp.role === 'worker' ? 'worker' : 'client'} linkError={sp.erreur === 'lien'} />
-    </Page>
-  )
+  const qs = new URLSearchParams(Object.entries(sp).filter((e): e is [string, string] => typeof e[1] === 'string')).toString()
+  redirect(`/auth/login${qs ? `?${qs}` : ''}`)
 }
